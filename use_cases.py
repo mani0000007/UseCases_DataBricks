@@ -103,19 +103,8 @@ df.write.format("delta").saveAsTable("Categories")
         create table salesCustomer as select c.Country, o.CustomerID, SUM(od.UnitPrice * od.Quantity) AS TotalSales FROM Orders o JOIN OrderDetails od ON o.OrderID = od.OrderID JOIN Customers c ON o.CustomerID = c.CustomerID GROUP BY c.Country,o.CustomerID
 
 
-3. #########-----Top 10 products in each Category------####
+3. #########-----Top 10 CUSTOMERS in each Category------####
 
-        %sql
-        SELECT c.CategoryID,c.CategoryName, p.ProductName, p.UnitPrice
-        FROM Categories c
-        INNER JOIN (
-            SELECT CategoryID, ProductName, UnitPrice,
-                   ROW_NUMBER() OVER (PARTITION BY CategoryID ORDER BY UnitPrice DESC) AS rank
-            FROM Products
-        ) p ON c.CategoryID = p.CategoryID AND p.rank <= 10
-        ORDER BY c.CategoryName, p.UnitPrice DESC;
-
-        -->
         drop table if exists salesCustCountry;
         create table salesCustcountry AS (SELECT Country, CustomerID, TotalSales, RANK() OVER (PARTITION BY Country ORDER BY TotalSales DESC) AS Rank
         FROM salesCustomer);
